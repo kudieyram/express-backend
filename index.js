@@ -1,7 +1,6 @@
 require('dotenv').config()
 const express = require('express')
-const mongoose = require('express')
-const { mongo } = require('mongoose')
+const mongoose = require('mongoose')
 
 
 const app = express()
@@ -10,7 +9,7 @@ const db = process.env.dbURI
 const port = process.env.PORT
 
 mongoose.connect(db, { 
-    userNewParser: true,
+    useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
 }, ()=>{
