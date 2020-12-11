@@ -4,7 +4,7 @@ const handleError= (error) => {
     let err = {username : '', email : '', password : ''}
 
     if(error.message === 'incorrect username'){
-        err.username = 'that username does not exit'
+        err.username = 'that username does not exist'
     }
 
     if (error.message === 'incorrect email'){

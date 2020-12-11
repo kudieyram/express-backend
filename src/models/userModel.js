@@ -1,24 +1,23 @@
 const mongoose = require('mongoose')
-
 const bcrypt = require('bcrypt')
 
+// Defining the User Schema
 const userSchema = new mongoose.Schema({
     fullname : {
         type : String,
-        minlength : [6, 'fullname must have a minimum lengnth of 6'],
+        minlength : [10, 'fullname must have a minimum lengnth of 10'],
         maxlength : [20, 'fullname must have a maximum length of 20'],
-        unique : true ,
+        unique : true,
         required : [true,'Please fullname is required'],
-        lowercase : true 
+        lowercase : true,
     },
 
     email : {
         type : String,
         unique : true ,
         required : [true,'Please email is required'],
-        lowercase : true 
+        lowercase : true, 
     },
-
 
     password : {
         type : String,
@@ -27,6 +26,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
+// Defining a single user (on how to save the data)
 const User = mongoose.model('user',userSchema)
 
 userSchema.pre('save',async function(next){
