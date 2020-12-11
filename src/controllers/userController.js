@@ -1,102 +1,79 @@
-const User = require('../models/user')
+const User = require('../models/userModel')
 
-const handleError = () => {
-    let err = { firstname: '', lastname:'', email:'', password:'', phone:'', comparePassword:''}
-    switch (error.message) {
-        case 'incorrect firstname':
-            err.firstname = 'firstname does not exist'
-        case 'incorrect lastname':
-            err.lastname= 'lastname does not exist'
-        case 'incorrect email':
-            err.email='invalid email'
-        case 11000: 
-            err.email='email already exist'
-            break;
-    
-        default:
-            return ''
+const handleError= (error) => {
+    let err = {username : '', email : '', password : ''}
+
+    if(error.message === 'incorrect username'){
+        err.username = 'that username does not exit'
     }
 
-    if(error.message.includes('user validation failed')){
+    if (error.message === 'incorrect email'){
+        err.email = 'that email is not valid'
+    }
+
+    if (error.message === 'incorrect password'){
+        err.password = 'the password is incorrect'
+    }
+
+    if (error.code === '11000'){
+        err.email   = 'that email is registered already'
+    }
+    
+    if (error.message.includes('user validation failed')){
         Object.values(error.errors).forEach(({properties}) => {
             err[properties.path] = properties.message
         })
     }
+
+
     return err
 }
-const UserController = {}
 
-//creating a user 
-UserController.createUser = async (req, res)=> {
+
+
+const userCtrl = {}
+
+//creating user(signup) using post method
+userCtrl.createUser = async(req,res)=>{
     try{
-        let newUser = new User(req.body)
-        let result = await newUser.save()
-        res.status(200).send({message: 'Account created', result})
-    }catch(error){
-        console.log(error)
-        const warning = handleError(error)
-        res.status(400).json({warning})
+        let user = new user(res.body)
+        let result = await user.save()
+        res.status(201).send({message: 'user is successfully created',result})
+    }
+    catch(error){
+        const warnings = handleError(error)
+        res.status(400).json({warnings})
     }
 }
 
-//retrieving users info
-UserController.getUsers = async (req,res) => {
-    try {
-        let user = await User.find({})
-        res.status(200).send({message: 'User found', user})
-    } catch (error) {
-        console.log(error)
-        const warning = handleError(error)
-        res.status(400).json({warning})
+//logining user in
+userCtrl.loginUser = async(req,res)=>{
+    const {email,password} = req.body
+    try{
+        
+        let  user = await user.findAll({email,password})
+        res.status(201).send({message: 'user is successfully created',result})
+    }
+    catch(error){
+        const warnings = handleError(error)
+        res.status(400).json({warnings})
     }
 }
 
-//         //id:req.params.id
-//         //getting a user 
-//  UserControllers.getOne = async(req,res) => {
-//      try {
-         
-//      } catch (error) {
-//          console.log(error)
-//      }
-//  }
+// updating user details using the update method
 
+userCtrl.updateUser = async (req,res) =>{
 
-//update user
-UserController.updateUser = async (req,res) => {
+    const {fullname,email,password} = req.body
 
-    //destructuring user detail
-    const {firstname, lastname,email, phone,password } = req.body
-    
-    try {
-         let user=  await User.findOneAndUpdate(
-            {_id: req.params.id},
-            {firstname, lastname, email, phone, password }
-        )
-        if(user){
-            res.status(200).send({message:'User updated successfully', user})
-        }else{
-            res.status(400).send({message:'Could not update user'})
-        }
-    } catch (error) {
-        console.log(error)
-        const warning = handleError(error)
-        res.status(400).json({warning})
+    try{
+       let user = await User.findOneAndupdate({_id: req.params.id},{fullname,email,password})
+        res.status(200).send({message: 'updated successfully',user})
+    }
+    catch(error){
+        const warnings = handleError(error)
+        res.status(400).json({warnings})
     }
 }
 
-//deleting user info
-UserController.deleteUser = async ( req,res ) => {
-    try {
-      let user=  await User.findOneAndDelete({_id: req.params.id})
-      if(user){  
-      res.status(200).send({message: 'User deleted successfully'})
-      }else{
-          res.status(400).send({message: 'Could not delete user'})
-      }
-    } catch (error) {
-        console.log(error)
-    }
-}
- 
-module.exports = UserController
+module.exports = userCtrl
